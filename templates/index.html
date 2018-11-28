@@ -1,0 +1,50 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Flask Chat App</title>
+    <link rel="stylesheet" href={{ url_for('static', filename='css/bootstrap.min.css') }}>
+    <link rel="stylesheet" href={{ url_for('static', filename='css/index.css') }}>
+    <script src={{ url_for('static', filename='js/popper.min.js') }}></script>
+    <script src={{ url_for('static', filename='js/bootstrap.min.js') }}></script>    
+</head>
+<body>
+    <div class="container">
+        <div class="div1">Flask Chatting App using SocketIO</div>
+        <div class="message_holder"></div>
+        
+        <form action="" method="post" class="chat_form form-control-sm">
+            <input type="text" name="username" placeholder="User Name" class="username form-control"><br/>
+            <input type="text" name="message" placeholder="Message" class="message form-control"><br/>
+            <input type="submit" value ="Send" name="submit" id="form_button" class="btn btn-success btn-small" data-toggle="tooltip" data-placement="right" title="Send your Chat">
+        </form>
+    </div>
+    
+    <script src={{ url_for('static', filename='js/jquery-3.3.1.min.js') }}></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+        <script type="text/javascript">
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+        socket.on('connect', function(){
+            socket.emit('my event', {data: 'Connection established'});
+        var form = $('form').on('submit', function(e){
+            e.preventDefault()
+            let username = $('input.username').val()
+            let message = $('input.message').val()
+            socket.emit('my event', {username : username, message : message})
+            $('input.message').val('').focus()
+        })
+        })
+        // capture a message
+        socket.on('my response', function(msg){
+            console.log(msg)
+            if(typeof msg.username != 'undefined'){
+                $('div.message_holder').append('<div class="msg_bbl"><b style="color: white;">'+ msg.username +" : " +'</b> ' + msg.message+'</div>')
+            }
+        })
+        $(function () {
+            $('#form_button').tooltip()
+        })
+    </script>
+</body>
+</html>
